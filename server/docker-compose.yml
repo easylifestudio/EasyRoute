@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  # ngrok client
+  ngrok:
+    build: ../ngrok
+    volumes:
+      - ../ngrok/BinExt:/BinExt
+      - ../ngrok/run:/run
+    command: /bin/sh /run/client.sh

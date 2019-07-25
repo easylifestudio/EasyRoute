@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  # shadowsocks server
+  shadowsocks:
+    image: shadowsocks/shadowsocks-libev
+    ports:
+      - "28827:28827"
+    environment:
+      - SERVER_ADDR=0.0.0.0
+      - TIMEOUT=600
+    env_file:
+      - ./shadowsocks/ssr.env
+    restart: always
+
+  # ngrok server
+  ngrokd:
+    build: ../ngrok
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+      - "4443:4443"
+      - "2222:2222"
+    volumes:
+      - ../ngrok/BinExt:/BinExt
+      - ../ngrok/run:/run
+    environment:
+      - DOMAIN= #domain
+    command: /bin/sh /run/server.sh
+
+  # nginx
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/log:/var/log/nginx
+    restart: always
